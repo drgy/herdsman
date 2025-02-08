@@ -1,7 +1,5 @@
-import {Application} from "pixi.js";
+import {Game} from "./Game.ts";
 
 (async () => {
-    const app = new Application();
-    await app.init({ background: '#27AE60', resizeTo: window });
-    document.body.appendChild(app.canvas);
+	await Game.load();
 })();

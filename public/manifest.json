@@ -1,0 +1,13 @@
+{
+  "bundles": [
+    {
+      "name": "environment",
+      "assets": [
+        {
+          "alias": "grass",
+          "src": "/grass.webp"
+        }
+      ]
+    }
+  ]
+}
