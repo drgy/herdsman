@@ -1,14 +1,24 @@
-import {Application, Assets, Container} from "pixi.js";
+import {Application, Assets, Container, Ticker} from "pixi.js";
 import {Background} from "./environment/Background.ts";
+import {AnimalManager} from "./agents/AnimalManager.ts";
 
 export class Game extends Application {
 	protected static instance = new Game();
 	protected environment = new Container();
 	protected agents = new Container();
 	protected resize_callbacks: (() => void)[] = [];
+	protected managers = {animal: new AnimalManager()};
 
 	protected constructor() {
 		super();
+	}
+
+	public static get agents_container(): Container {
+		return Game.instance.agents;
+	}
+
+	public static get ticker(): Ticker {
+		return Game.instance.ticker;
 	}
 
 	public static get width(): number {
@@ -23,6 +33,10 @@ export class Game extends Application {
 		Game.instance.resize_callbacks.push(callback);
 	}
 
+	public static on_update(callback: (delta: Ticker) => void) {
+		Game.instance.ticker.add(callback);
+	}
+
 	public static async load(target: HTMLElement = document.body) {
 		await Game.instance.init({ resizeTo: target });
 		target.appendChild(Game.instance.canvas);
@@ -32,7 +46,7 @@ export class Game extends Application {
 		Game.instance.stage.addChild(Game.instance.environment);
 		Game.instance.stage.addChild(Game.instance.agents);
 
-		await Game.setup_environment();
+		await Promise.all([Game.setup_environment(), Game.setup_agents()]);
 
 		const resize_observer = new ResizeObserver(() => {
 			for (const callback of Game.instance.resize_callbacks) {
@@ -46,5 +60,11 @@ export class Game extends Application {
 		await Assets.loadBundle('environment');
 
 		Game.instance.environment.addChild(new Background());
+	}
+
+	protected static async setup_agents() {
+		await Assets.loadBundle('agents');
+
+		Game.instance.managers.animal.spawn();
 	}
 }

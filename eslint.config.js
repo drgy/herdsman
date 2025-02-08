@@ -54,7 +54,7 @@ export default [
 			"@stylistic/member-delimiter-style": ["error"],
 			"@stylistic/no-extra-semi": ["error"],
 			"@stylistic/curly-newline": ["error", { "multiline": true, "consistent": true }],
-			"@stylistic/object-curly-newline": ["error", { "multiline": true }],
+			"@stylistic/object-curly-newline": ["error"],
 			"@stylistic/array-bracket-newline": ["error", { "multiline": true }],
 			"@stylistic/array-element-newline": ["error", "consistent"],
 			"@stylistic/semi": ["error"],

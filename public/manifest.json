@@ -8,6 +8,31 @@
           "src": "/grass.webp"
         }
       ]
+    },
+    {
+      "name": "agents",
+      "assets": [
+        {
+          "alias": "chicken",
+          "src": "/chicken.webp"
+        },
+        {
+          "alias": "cow",
+          "src": "/cow.webp"
+        },
+        {
+          "alias": "llama",
+          "src": "/llama.webp"
+        },
+        {
+          "alias": "pig",
+          "src": "/pig.webp"
+        },
+        {
+          "alias": "sheep",
+          "src": "/sheep.webp"
+        }
+      ]
     }
   ]
 }
