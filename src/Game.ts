@@ -1,9 +1,10 @@
-import {Application, Assets, Container, Ticker} from "pixi.js";
+import {Application, Assets, AssetsManifest, Container, Ticker} from "pixi.js";
 import {Background} from "./environment/Background.ts";
 import {AnimalManager} from "./managers/AnimalManager.ts";
 import {Herdsman} from "./agents/Herdsman.ts";
 import {Barn} from "./environment/Barn.ts";
 import {ScoreManager} from "./managers/ScoreManager.ts";
+import {ArrayOr} from "pixi.js/lib/assets/types";
 
 export class Game extends Application {
 	protected static instance = new Game();
@@ -62,7 +63,17 @@ export class Game extends Application {
 		await Game.instance.init({ resizeTo: target });
 		target.appendChild(Game.instance.canvas);
 
-		await Assets.init({ basePath: import.meta.env.BASE_URL, manifest: `${import.meta.env.BASE_URL}manifest.json` });
+		const manifest: AssetsManifest = await (await fetch(`${import.meta.env.BASE_URL}manifest.json`)).json();
+
+		for (const bundle of manifest.bundles) {
+			if (Symbol.iterator in bundle.assets) {
+				for (const asset of bundle.assets) {
+					asset.src = `${import.meta.env.BASE_URL}${asset.src}`;
+				}
+			}
+		}
+
+		await Assets.init({ basePath: import.meta.env.BASE_URL, manifest });
 
 		Game.instance.stage.addChild(Game.instance.environment);
 		Game.instance.stage.addChild(Game.instance.agents);
