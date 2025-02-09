@@ -102,13 +102,11 @@ export class Agent extends Sprite {
 					this.x += direction.x * step;
 					this.y += direction.y * step;
 				}
+			} else if (distance > this.speed) {
+				this.x += direction.x * step;
+				this.y += direction.y * step;
 			} else {
-				if (distance > this.speed) {
-					this.x += direction.x * step;
-					this.y += direction.y * step;
-				} else {
-					this.target = null;
-				}
+				this.target = null;
 			}
 		}
 	}

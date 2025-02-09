@@ -36,6 +36,8 @@ export class AnimalManager {
 
 	public deliver() {
 		if (this.hooked.length) {
+			Game.manager.score.increaseScore(this.hooked.length);
+
 			for (const animal of this.hooked) {
 				animal.destroy();
 			}

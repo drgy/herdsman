@@ -3,16 +3,20 @@ import {Background} from "./environment/Background.ts";
 import {AnimalManager} from "./managers/AnimalManager.ts";
 import {Herdsman} from "./agents/Herdsman.ts";
 import {Barn} from "./environment/Barn.ts";
+import {ScoreManager} from "./managers/ScoreManager.ts";
 
 export class Game extends Application {
 	protected static instance = new Game();
 	protected environment = new Container();
 	protected agents = new Container();
 	protected resize_callbacks: (() => void)[] = [];
-	protected managers = {animal: new AnimalManager()};
 	protected background: Background;
 	protected herdsman: Herdsman;
 	protected drop_off: Barn;
+	protected managers = {
+		animal: new AnimalManager(),
+		score: new ScoreManager()
+	};
 
 	protected constructor() {
 		super();
@@ -62,6 +66,8 @@ export class Game extends Application {
 
 		Game.instance.stage.addChild(Game.instance.environment);
 		Game.instance.stage.addChild(Game.instance.agents);
+
+		Game.instance.managers.score.load(target);
 
 		await Game.setup_environment();
 		await Game.setup_agents();
