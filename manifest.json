@@ -1,0 +1,46 @@
+{
+  "bundles": [
+    {
+      "name": "environment",
+      "assets": [
+        {
+          "alias": "grass",
+          "src": "/grass.webp"
+        },
+        {
+          "alias": "barn",
+          "src": "/barn.webp"
+        }
+      ]
+    },
+    {
+      "name": "agents",
+      "assets": [
+        {
+          "alias": "chicken",
+          "src": "/chicken.webp"
+        },
+        {
+          "alias": "cow",
+          "src": "/cow.webp"
+        },
+        {
+          "alias": "llama",
+          "src": "/llama.webp"
+        },
+        {
+          "alias": "pig",
+          "src": "/pig.webp"
+        },
+        {
+          "alias": "sheep",
+          "src": "/sheep.webp"
+        },
+        {
+          "alias": "farmer",
+          "src": "/farmer.webp"
+        }
+      ]
+    }
+  ]
+}
