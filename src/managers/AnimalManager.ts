@@ -1,9 +1,11 @@
-import {Animal} from "./Animal.ts";
+import {Animal} from "../agents/Animal.ts";
 import {Game} from "../Game.ts";
 
 export class AnimalManager {
 	protected free_animals = 0;
 	protected next_spawn = -1;
+	protected hooked_count = 0;
+	protected hooked_tail: Animal | null = null;
 
 	constructor() {
 
@@ -18,5 +20,18 @@ export class AnimalManager {
 				this.spawn();
 			}, Math.random() * import.meta.env.VITE_ANIMAL_RESPAWN_INTERVAL * 1000);
 		}
+	}
+
+	public hook(animal: Animal): boolean {
+		if (this.hooked_count < import.meta.env.VITE_MAX_HOOKED_ANIMALS) {
+			animal.follow(this.hooked_tail || Game.player);
+			this.hooked_tail = animal;
+			this.free_animals--;
+			this.hooked_count++;
+
+			return true;
+		}
+
+		return false;
 	}
 }

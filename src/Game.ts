@@ -1,6 +1,7 @@
 import {Application, Assets, Container, Ticker} from "pixi.js";
 import {Background} from "./environment/Background.ts";
-import {AnimalManager} from "./agents/AnimalManager.ts";
+import {AnimalManager} from "./managers/AnimalManager.ts";
+import {Herdsman} from "./agents/Herdsman.ts";
 
 export class Game extends Application {
 	protected static instance = new Game();
@@ -8,9 +9,23 @@ export class Game extends Application {
 	protected agents = new Container();
 	protected resize_callbacks: (() => void)[] = [];
 	protected managers = {animal: new AnimalManager()};
+	protected background: Background;
+	protected herdsman: Herdsman;
 
 	protected constructor() {
 		super();
+	}
+
+	public static get manager(): typeof Game.instance.managers {
+		return Game.instance.managers;
+	}
+
+	public static get player(): Herdsman {
+		return Game.instance.herdsman;
+	}
+
+	public static get field(): Background {
+		return Game.instance.background;
 	}
 
 	public static get agents_container(): Container {
@@ -46,7 +61,8 @@ export class Game extends Application {
 		Game.instance.stage.addChild(Game.instance.environment);
 		Game.instance.stage.addChild(Game.instance.agents);
 
-		await Promise.all([Game.setup_environment(), Game.setup_agents()]);
+		await Game.setup_environment();
+		await Game.setup_agents();
 
 		const resize_observer = new ResizeObserver(() => {
 			for (const callback of Game.instance.resize_callbacks) {
@@ -59,12 +75,15 @@ export class Game extends Application {
 	protected static async setup_environment() {
 		await Assets.loadBundle('environment');
 
-		Game.instance.environment.addChild(new Background());
+		Game.instance.background = new Background();
+		Game.instance.environment.addChild(Game.instance.background);
 	}
 
 	protected static async setup_agents() {
 		await Assets.loadBundle('agents');
 
+		Game.instance.herdsman = new Herdsman();
+		Game.instance.agents.addChild(Game.instance.herdsman);
 		Game.instance.managers.animal.spawn();
 	}
 }

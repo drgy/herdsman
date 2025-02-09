@@ -1,8 +1,8 @@
-import {Point, Sprite, Texture, Ticker} from "pixi.js";
+import {Point, Sprite, Texture, Ticker, Container, ContainerChild} from "pixi.js";
 import {Game} from "../Game.ts";
 
 export class Agent extends Sprite {
-	protected target: Point | null = null;
+	protected target: Container | Point | null = null;
 	protected speed = 2;
 
 	constructor(alias: string) {
@@ -15,6 +15,27 @@ export class Agent extends Sprite {
 		Game.on_update((delta: Ticker) => this.update(delta));
 	}
 
+	public distance(target: Container | Point, direction = new Point()): number {
+		const global = this.getGlobalPosition();
+
+		if (target instanceof Container) {
+			target.getGlobalPosition(direction);
+		} else {
+			direction.copyFrom(target);
+		}
+
+		direction.set(direction.x - global.x, direction.y - global.y);
+
+		const distance = Math.sqrt(direction.x ** 2 + direction.y ** 2);
+
+		if (distance > 0) {
+			direction.x /= distance;
+			direction.y /= distance;
+		}
+
+		return distance;
+	}
+
 	protected get random_point(): Point {
 		return new Point(Math.random() * (Game.width - this.width) + (this.width / 2), Math.random() * (Game.height - this.height) + (this.height / 2));
 	}
@@ -22,12 +43,11 @@ export class Agent extends Sprite {
 	public async animate_scale(target_scale: number): Promise<void> {
 		return new Promise<void>(resolve => {
 			const initial_scale = this.scale.x;
-			let elapsed_ms = 0;
+			let progress = 0;
 
 			const update = (delta: Ticker) => {
-				elapsed_ms += delta.elapsedMS;
+				progress = Math.min(1, progress + delta.elapsedMS / import.meta.env.VITE_ANIMATION_DURATION);
 
-				const progress = Math.min(elapsed_ms / import.meta.env.VITE_ANIMATION_DURATION, 1);
 				const ease = 1 - (1 - progress) ** 3;
 				const current = initial_scale + (target_scale - initial_scale) * ease;
 
@@ -46,15 +66,22 @@ export class Agent extends Sprite {
 
 	public update(delta: Ticker) {
 		if (this.target) {
-			const dx = this.target.x - this.x;
-			const dy = this.target.y - this.y;
-			const distance = Math.sqrt(dx ** 2 + dy ** 2);
+			const direction = new Point();
+			const distance = this.distance(this.target, direction);
+			const step = this.speed * delta.deltaTime;
 
-			if (distance > this.speed) {
-				this.x += (dx / distance) * this.speed * delta.deltaTime;
-				this.y += (dy / distance) * this.speed * delta.deltaTime;
+			if (this.target instanceof Container) {
+				if (distance >= import.meta.env.VITE_PROXIMITY_DISTANCE) {
+					this.x += direction.x * step;
+					this.y += direction.y * step;
+				}
 			} else {
-				this.target = null;
+				if (distance > this.speed) {
+					this.x += direction.x * step;
+					this.y += direction.y * step;
+				} else {
+					this.target = null;
+				}
 			}
 		}
 	}

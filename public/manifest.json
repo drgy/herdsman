@@ -31,6 +31,10 @@
         {
           "alias": "sheep",
           "src": "/sheep.webp"
+        },
+        {
+          "alias": "farmer",
+          "src": "/farmer.webp"
         }
       ]
     }
