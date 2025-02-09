@@ -4,8 +4,7 @@ import {Game} from "../Game.ts";
 export class AnimalManager {
 	protected free_animals = 0;
 	protected next_spawn = -1;
-	protected hooked_count = 0;
-	protected hooked_tail: Animal | null = null;
+	protected hooked: Animal[] = [];
 
 	constructor() {
 
@@ -23,15 +22,25 @@ export class AnimalManager {
 	}
 
 	public hook(animal: Animal): boolean {
-		if (this.hooked_count < import.meta.env.VITE_MAX_HOOKED_ANIMALS) {
-			animal.follow(this.hooked_tail || Game.player);
-			this.hooked_tail = animal;
+		if (this.hooked.length < import.meta.env.VITE_MAX_HOOKED_ANIMALS) {
+			animal.follow(this.hooked.length ? this.hooked[this.hooked.length - 1] : Game.player);
+			this.hooked.push(animal);
 			this.free_animals--;
-			this.hooked_count++;
+			this.spawn();
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public deliver() {
+		if (this.hooked.length) {
+			for (const animal of this.hooked) {
+				animal.destroy();
+			}
+
+			this.hooked = [];
+		}
 	}
 }

@@ -2,6 +2,7 @@ import {Application, Assets, Container, Ticker} from "pixi.js";
 import {Background} from "./environment/Background.ts";
 import {AnimalManager} from "./managers/AnimalManager.ts";
 import {Herdsman} from "./agents/Herdsman.ts";
+import {Barn} from "./environment/Barn.ts";
 
 export class Game extends Application {
 	protected static instance = new Game();
@@ -11,6 +12,7 @@ export class Game extends Application {
 	protected managers = {animal: new AnimalManager()};
 	protected background: Background;
 	protected herdsman: Herdsman;
+	protected drop_off: Barn;
 
 	protected constructor() {
 		super();
@@ -18,6 +20,10 @@ export class Game extends Application {
 
 	public static get manager(): typeof Game.instance.managers {
 		return Game.instance.managers;
+	}
+
+	public static get barn(): Barn {
+		return Game.instance.drop_off;
 	}
 
 	public static get player(): Herdsman {
@@ -48,10 +54,6 @@ export class Game extends Application {
 		Game.instance.resize_callbacks.push(callback);
 	}
 
-	public static on_update(callback: (delta: Ticker) => void) {
-		Game.instance.ticker.add(callback);
-	}
-
 	public static async load(target: HTMLElement = document.body) {
 		await Game.instance.init({ resizeTo: target });
 		target.appendChild(Game.instance.canvas);
@@ -77,6 +79,9 @@ export class Game extends Application {
 
 		Game.instance.background = new Background();
 		Game.instance.environment.addChild(Game.instance.background);
+
+		Game.instance.drop_off = new Barn();
+		Game.instance.environment.addChild(Game.instance.drop_off);
 	}
 
 	protected static async setup_agents() {
@@ -84,6 +89,7 @@ export class Game extends Application {
 
 		Game.instance.herdsman = new Herdsman();
 		Game.instance.agents.addChild(Game.instance.herdsman);
+
 		Game.instance.managers.animal.spawn();
 	}
 }

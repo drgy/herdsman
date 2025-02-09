@@ -1,5 +1,5 @@
 import {Agent} from "./Agent.ts";
-import {Container, Ticker} from "pixi.js";
+import {Container, Texture, Ticker} from "pixi.js";
 import {Game} from "../Game.ts";
 
 const ANIMALS = ['chicken', 'cow', 'llama', 'pig', 'sheep'];
@@ -7,9 +7,18 @@ const ANIMALS = ['chicken', 'cow', 'llama', 'pig', 'sheep'];
 export class Animal extends Agent {
 	protected rest_time = Math.random() * import.meta.env.VITE_ANIMAL_MAX_REST * 100;
 	protected hooked = false;
+	protected static animal_textures: Texture[] = [];
+
+	protected static generate_textures() {
+		Animal.animal_textures = ANIMALS.map(alias => Texture.from(alias));
+	}
 
 	constructor() {
-		super(ANIMALS[Math.floor(Math.random() * ANIMALS.length)]);
+		if (!Animal.animal_textures.length) {
+			Animal.generate_textures();
+		}
+
+		super(Animal.animal_textures[Math.floor(Math.random() * Animal.animal_textures.length)]);
 
 		this.speed = import.meta.env.VITE_ANIMAL_MAX_SPEED;
 		this.position = this.random_point;

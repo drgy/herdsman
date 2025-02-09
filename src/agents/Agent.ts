@@ -1,18 +1,39 @@
-import {Point, Sprite, Texture, Ticker, Container, ContainerChild} from "pixi.js";
+import {Point, Sprite, Texture, Ticker, Container} from "pixi.js";
 import {Game} from "../Game.ts";
 
 export class Agent extends Sprite {
 	protected target: Container | Point | null = null;
 	protected speed = 2;
+	protected update_ref: (delta: Ticker) => void;
 
-	constructor(alias: string) {
-		super(Texture.from(alias));
+	constructor(texture: Texture) {
+		super(texture);
 
 		this.anchor.set(0.5, 0.5);
 		this.scale.set(0, 0);
 		this.animate_scale(1.25).then(() => this.animate_scale(1));
 
-		Game.on_update((delta: Ticker) => this.update(delta));
+		this.update_ref = this.update.bind(this);
+		Game.ticker.add(this.update_ref);
+	}
+
+	public destroy() {
+		this.animate_scale(1.5).then(() => this.animate_scale(0)).then(() => {
+			Game.ticker.remove(this.update_ref);
+			super.destroy();
+		});
+	}
+
+	public overlaps(target: Container): boolean {
+		const target_bounds = target.getBounds();
+		const agent_bounds = this.getBounds();
+
+		return (
+			target_bounds.x < agent_bounds.x + agent_bounds.width &&
+			target_bounds.x + target_bounds.width > agent_bounds.x &&
+			target_bounds.y < agent_bounds.y + agent_bounds.height &&
+			target_bounds.y + target_bounds.height > agent_bounds.y
+		);
 	}
 
 	public distance(target: Container | Point, direction = new Point()): number {
@@ -37,7 +58,13 @@ export class Agent extends Sprite {
 	}
 
 	protected get random_point(): Point {
-		return new Point(Math.random() * (Game.width - this.width) + (this.width / 2), Math.random() * (Game.height - this.height) + (this.height / 2));
+		const point = new Point(Math.random() * (Game.width - this.width) + (this.width / 2), Math.random() * (Game.height - this.height) + (this.height / 2));
+
+		if (point.x < Game.barn.width && point.y < Game.barn.height) {
+			return this.random_point;
+		}
+
+		return point;
 	}
 
 	public async animate_scale(target_scale: number): Promise<void> {

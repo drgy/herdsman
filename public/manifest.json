@@ -6,6 +6,10 @@
         {
           "alias": "grass",
           "src": "/grass.webp"
+        },
+        {
+          "alias": "barn",
+          "src": "/barn.webp"
         }
       ]
     },
