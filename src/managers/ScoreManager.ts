@@ -1,6 +1,6 @@
 export class ScoreManager {
 	protected score = 0;
-	protected text: HTMLSpanElement;
+	protected text: HTMLSpanElement | null = null;
 
 	public load(target: HTMLElement) {
 		this.text = document.createElement('span');
@@ -14,6 +14,6 @@ export class ScoreManager {
 
 	public increaseScore(amount: number) {
 		this.score += amount;
-		this.text.innerText = this.score.toString();
+		this.text!.innerText = this.score.toString();
 	}
 }

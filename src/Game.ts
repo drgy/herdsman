@@ -10,9 +10,9 @@ export class Game extends Application {
 	protected environment = new Container();
 	protected agents = new Container();
 	protected resize_callbacks: (() => void)[] = [];
-	protected background: Background;
-	protected herdsman: Herdsman;
-	protected drop_off: Barn;
+	protected background: Background | null = null;
+	protected herdsman: Herdsman | null = null;
+	protected drop_off: Barn | null = null;
 	protected managers = {
 		animal: new AnimalManager(),
 		score: new ScoreManager()
@@ -27,15 +27,15 @@ export class Game extends Application {
 	}
 
 	public static get barn(): Barn {
-		return Game.instance.drop_off;
+		return Game.instance.drop_off!;
 	}
 
 	public static get player(): Herdsman {
-		return Game.instance.herdsman;
+		return Game.instance.herdsman!;
 	}
 
 	public static get field(): Background {
-		return Game.instance.background;
+		return Game.instance.background!;
 	}
 
 	public static get agents_container(): Container {
