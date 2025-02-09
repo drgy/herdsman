@@ -62,7 +62,7 @@ export class Game extends Application {
 		await Game.instance.init({ resizeTo: target });
 		target.appendChild(Game.instance.canvas);
 
-		await Assets.init({ basePath: import.meta.env.BASE_URL, manifest: '/manifest.json' });
+		await Assets.init({ basePath: import.meta.env.BASE_URL, manifest: `${import.meta.env.BASE_URL}manifest.json` });
 
 		Game.instance.stage.addChild(Game.instance.environment);
 		Game.instance.stage.addChild(Game.instance.agents);
